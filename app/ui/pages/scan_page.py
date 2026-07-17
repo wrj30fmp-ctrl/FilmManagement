@@ -54,12 +54,10 @@ class ScanPage(QWidget):
         btn_layout = QHBoxLayout()
         self.scan_btn = QPushButton("填写 / 编辑扫描信息")
         self.scan_btn.clicked.connect(self._on_edit_scan)
-        self.scan_btn.setEnabled(False)
         btn_layout.addWidget(self.scan_btn)
 
         self.open_folder_btn = QPushButton("📂 打开扫描文件夹")
         self.open_folder_btn.clicked.connect(self._on_open_folder)
-        self.open_folder_btn.setEnabled(False)
         self.open_folder_btn.setStyleSheet(
             "QPushButton { color: #1565C0; }"
         )
@@ -69,8 +67,6 @@ class ScanPage(QWidget):
         self.stats_label = QLabel()
         btn_layout.addWidget(self.stats_label)
         layout.addLayout(btn_layout)
-
-        self.table.itemSelectionChanged.connect(self._on_selection_changed)
 
     def refresh_data(self):
         """显示等待扫描和已扫描的胶卷"""
@@ -89,12 +85,6 @@ class ScanPage(QWidget):
             row["status"] = get_status_display(row.get("status", ""))
         self.table.load_data(data)
         self.stats_label.setText(f"共 {len(data)} 条记录")
-
-    def _on_selection_changed(self):
-        """选中变更时更新按钮状态"""
-        has_selection = self.table.get_selected_row() is not None
-        self.scan_btn.setEnabled(has_selection)
-        self.open_folder_btn.setEnabled(has_selection)
 
     def _on_open_folder(self):
         """打开选中记录的扫描文件夹
@@ -172,6 +162,9 @@ class ScanPage(QWidget):
     def _on_edit_scan(self):
         result = self.table.get_selected_row()
         if result is None:
+            QMessageBox.information(self, "提示",
+                "请先在「拍摄记录」页面添加记录，并将状态推进到「已冲洗」或之后。\n\n"
+                "扫描管理页面只显示已完成冲洗的胶卷。")
             return
         self._open_scan_dialog(result[1])
 

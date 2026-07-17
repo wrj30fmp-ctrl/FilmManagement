@@ -84,6 +84,10 @@ film_manager/
 - **Repository 层** — 参数化 SQL，数据访问抽象
 - **Database 层** — SQLite + WAL 模式，版本迁移
 
+## 使用说明
+
+详细的使用说明书请参阅 [使用说明书.md](使用说明书.md)
+
 ## License
 
 MIT

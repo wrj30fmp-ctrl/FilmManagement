@@ -51,15 +51,11 @@ class ArchivePage(QWidget):
         btn_layout = QHBoxLayout()
         self.archive_btn = QPushButton("填写 / 编辑归档信息")
         self.archive_btn.clicked.connect(self._on_edit_archive)
-        self.archive_btn.setEnabled(False)
         btn_layout.addWidget(self.archive_btn)
         btn_layout.addStretch()
         self.stats_label = QLabel()
         btn_layout.addWidget(self.stats_label)
         layout.addLayout(btn_layout)
-
-        self.table.itemSelectionChanged.connect(
-            lambda: self.archive_btn.setEnabled(self.table.get_selected_row() is not None))
 
     def refresh_data(self):
         """显示已扫描和已归档的胶卷"""
@@ -84,6 +80,9 @@ class ArchivePage(QWidget):
     def _on_edit_archive(self):
         result = self.table.get_selected_row()
         if result is None:
+            QMessageBox.information(self, "提示",
+                "请先在「拍摄记录」页面添加记录，并将状态推进到「已扫描」或之后。\n\n"
+                "归档管理页面只显示已完成扫描的胶卷。")
             return
         self._open_archive_dialog(result[1])
 

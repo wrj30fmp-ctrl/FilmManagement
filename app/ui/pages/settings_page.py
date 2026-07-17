@@ -7,7 +7,7 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QFormLayout, QSpinBox, QLineEdit, QGroupBox, QMessageBox, QFileDialog,
-    QCheckBox, QComboBox,
+    QCheckBox, QComboBox, QScrollArea,
 )
 from PySide6.QtCore import Qt
 
@@ -28,17 +28,33 @@ class SettingsPage(QWidget):
         self._setup_ui()
 
     def _setup_ui(self):
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(16, 16, 16, 16)
-        layout.setSpacing(16)
+        self.setStyleSheet("color: #2c1810;")
+
+        # 用滚动区域包裹所有内容
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+
+        content = QWidget()
+        layout = QVBoxLayout(content)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(24)
 
         title = QLabel("<h2>设置</h2>")
         title.setStyleSheet("color: #2c1810; background: transparent;")
         layout.addWidget(title)
 
+        # 辅助函数：创建带标准间距的 GroupBox
+        def _make_group(title_text: str) -> tuple[QGroupBox, QFormLayout]:
+            gb = QGroupBox(title_text)
+            fl = QFormLayout(gb)
+            fl.setSpacing(10)
+            fl.setContentsMargins(16, 20, 16, 12)
+            fl.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+            return gb, fl
+
         # --- 数据路径组 ---
-        path_group = QGroupBox("数据路径")
-        path_form = QFormLayout(path_group)
+        path_group, path_form = _make_group("数据路径")
 
         # 数据库路径
         db_layout = QHBoxLayout()
@@ -76,8 +92,7 @@ class SettingsPage(QWidget):
         layout.addWidget(path_group)
 
         # --- 备份设置组 ---
-        backup_group = QGroupBox("备份设置")
-        backup_form = QFormLayout(backup_group)
+        backup_group, backup_form = _make_group("备份设置")
 
         self.backup_count_spin = QSpinBox()
         self.backup_count_spin.setRange(1, 100)
@@ -119,8 +134,7 @@ class SettingsPage(QWidget):
         layout.addWidget(backup_group)
 
         # --- 默认设置组 ---
-        pref_group = QGroupBox("偏好设置")
-        pref_form = QFormLayout(pref_group)
+        pref_group, pref_form = _make_group("偏好设置")
 
         self.currency_combo = QComboBox()
         for curr in CURRENCIES:
@@ -132,8 +146,7 @@ class SettingsPage(QWidget):
         layout.addWidget(pref_group)
 
         # --- 数据导出组 ---
-        export_group = QGroupBox("数据导出")
-        export_form = QFormLayout(export_group)
+        export_group, export_form = _make_group("数据导出")
 
         export_btn_layout = QHBoxLayout()
         export_csv_btn = QPushButton("导出 CSV（所有表）")
@@ -150,8 +163,7 @@ class SettingsPage(QWidget):
         layout.addWidget(export_group)
 
         # --- 标签打印组 ---
-        label_group = QGroupBox("标签打印")
-        label_form = QFormLayout(label_group)
+        label_group, label_form = _make_group("标签打印")
 
         label_btn_layout = QHBoxLayout()
         batch_label_btn = QPushButton("🏷 批量生成库存标签")
@@ -171,8 +183,7 @@ class SettingsPage(QWidget):
         layout.addWidget(label_group)
 
         # --- 数据导入组 ---
-        import_group = QGroupBox("数据导入")
-        import_form = QFormLayout(import_group)
+        import_group, import_form = _make_group("数据导入")
 
         import_btn_layout = QHBoxLayout()
         import_csv_btn = QPushButton("从 CSV 导入库存...")
@@ -202,6 +213,11 @@ class SettingsPage(QWidget):
         layout.addWidget(import_group)
 
         layout.addStretch()
+        scroll.setWidget(content)
+
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.addWidget(scroll)
 
     def _update_backup_status(self):
         """更新最近备份时间显示"""

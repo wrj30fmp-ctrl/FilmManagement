@@ -77,15 +77,11 @@ class DevelopmentPage(QWidget):
         btn_layout = QHBoxLayout()
         self.dev_btn = QPushButton("填写 / 编辑冲洗信息")
         self.dev_btn.clicked.connect(self._on_edit_dev)
-        self.dev_btn.setEnabled(False)
         btn_layout.addWidget(self.dev_btn)
         btn_layout.addStretch()
         self.stats_label = QLabel()
         btn_layout.addWidget(self.stats_label)
         layout.addLayout(btn_layout)
-
-        self.table.itemSelectionChanged.connect(
-            lambda: self.dev_btn.setEnabled(self.table.get_selected_row() is not None))
 
     def refresh_data(self):
         """刷新数据：显示已拍摄待冲洗和已冲洗的胶卷"""
@@ -117,6 +113,9 @@ class DevelopmentPage(QWidget):
     def _on_edit_dev(self):
         result = self.table.get_selected_row()
         if result is None:
+            QMessageBox.information(self, "提示",
+                "请先在「拍摄记录」页面添加记录，并将状态推进到「已拍摄，待冲洗」或之后。\n\n"
+                "冲洗管理页面只显示已拍摄完成的胶卷。")
             return
         self._open_dev_dialog(result[1])
 
