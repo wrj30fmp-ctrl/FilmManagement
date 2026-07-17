@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+*.spec
+
+# 虚拟环境
+venv/
+.venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 项目数据（不应提交用户的本地数据）
+*.db
+backups/
+exports/
+
+# PyInstaller
+*.manifest
